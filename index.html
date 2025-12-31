@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Reality Check 2026</title>
+    <link rel="icon" href="" type="image/x-icon">
+    
+    <style>
+        :root {
+            --bg-color: #2a0a0a;
+            --bg-gradient: radial-gradient(circle at top right, #7f1d1d, #2a0a0a);
+            --card-bg: rgba(69, 10, 10, 0.85);
+            --card-border: rgba(255, 215, 0, 0.15);
+            --primary: #fbbf24;
+            --accent: #f87171;
+            --text-main: #ffffff;
+            --text-muted: #e5e5e5;
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --range-bg: #451a1a;
+            --shadow-color: rgba(0,0,0,0.6);
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-color: #fff1f2;
+                --bg-gradient: radial-gradient(circle at top right, #fecdd3, #fff1f2);
+                --card-bg: rgba(255, 255, 255, 0.9);
+                --card-border: rgba(0,0,0,0.1);
+                --primary: #e11d48;
+                --accent: #fbbf24;
+                --text-main: #881337;
+                --text-muted: #9f1239;
+                --input-bg: rgba(0,0,0,0.05);
+                --range-bg: #fda4af;
+                --shadow-color: rgba(0,0,0,0.1);
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+        
+        .fade-in { animation: fadeIn 1s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .slide-up { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        #app-container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 50px var(--shadow-color);
+        }
+
+        .countdown-box {
+            text-align: center;
+            padding: 3rem;
+        }
+        .timer-display {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .input-group {
+            margin-top: 2rem;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        input[type="text"] {
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            width: 60%;
+            outline: none;
+            transition: 0.3s;
+        }
+        input[type="text"]:focus { box-shadow: 0 0 15px var(--primary); border-color: var(--primary); }
+        
+        button {
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), #d97706);
+            color: #2a0a0a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+
+        #view-letter {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #typewriter-text {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            margin: 20px 0 30px 0;
+            white-space: pre-wrap;
+            color: var(--text-muted);
+            min-height: 120px;
+        }
+        .cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: var(--primary);
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .goal-card {
+            background: var(--input-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--card-border);
+        }
+        .goal-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: var(--range-bg);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            margin-top: 10px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .range-value { float: right; color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+
+        .result-container {
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        canvas#progressChart {
+            width: 100%;
+            max-width: 700px;
+            height: auto;
+            margin: 30px auto;
+            display: block;
+        }
+
+        .personal-message {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--input-bg);
+            border-left: 5px solid var(--primary);
+            border-radius: 5px;
+            color: var(--text-muted);
+        }
+
+        #fireworks-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @media print {
+            body { background: white; color: black; display: block; }
+            #app-container { max-width: 100%; padding: 0; }
+            .no-print, #fireworks-canvas { display: none !important; }
+            .result-container { 
+                box-shadow: none; 
+                padding: 20px; 
+                color: black;
+                border: none;
+                background: white;
+            }
+            .personal-message { background: none; border-left: 2px solid black; color: black; }
+            canvas { border: 1px solid #eee; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div id="app-container">
+        
+        <div id="view-countdown" class="countdown-box glass-card">
+            <h1 style="color: var(--primary);">⚠️ Fate Sealed until 2026</h1>
+            <p style="color: var(--text-muted); margin-top: 10px;">The universe isn't ready for you yet.</p>
+            <div class="timer-display" id="timer">00:00:00</div>
+        </div>
+
+        <div id="view-intro" class="countdown-box glass-card hidden">
+            <h1>Who dares to check their fate?</h1>
+            <div class="input-group">
+                <input type="text" id="username" placeholder="Go on, enter your name, bro... It’s me - Rishav🫦" autocomplete="off">
+                <button onclick="submitName()">Reveal 🔮</button>
+            </div>
+        </div>
+
+        <div id="view-letter" class="glass-card hidden">
+            <h1 id="letter-header" style="color: var(--primary);"></h1>
+            <div id="typewriter-text" class="cursor"></div>
+            <button id="btn-next-goals" class="hidden" onclick="showDashboard()">Proceed at your own risk ➡️</button>
+        </div>
+
+        <div id="view-goals" class="hidden">
+            <div class="glass-card" style="padding: 30px;">
+                <h1 id="greeting-header" style="text-align: center; margin-bottom: 10px; color: var(--primary);"></h1>
+                <p style="text-align: center; color: var(--text-muted);">Adjust the sliders to match your delusions for 2026.</p>
+                
+                <div class="dashboard-grid">
+                    <div class="goal-card">
+                        <div class="goal-header">💸 Money</div>
+                        <label style="color: var(--text-muted);">Greed Level</label>
+                        <input type="range" id="goal-money" min="0" max="100" value="50" oninput="updateVal('val-money', this.value)">
+                        <span id="val-money" class="range-value">50%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">😁 Happiness</div>
+                        <label style="color: var(--text-muted);">Expected Joy</label>
+                        <input type="range" id="goal-happy" min="0" max="100" value="50" oninput="updateVal('val-happy', this.value)">
+                        <span id="val-happy" class="range-value">50%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">❤️ Love Life</div>
+                        <label style="color: var(--text-muted);">Hopeless Romanticism</label>
+                        <input type="range" id="goal-love" min="0" max="100" value="50" oninput="updateVal('val-love', this.value)">
+                        <span id="val-love" class="range-value">50%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">🍀 Pure Luck</div>
+                        <label style="color: var(--text-muted);">Relying on Chance</label>
+                        <input type="range" id="goal-luck" min="0" max="100" value="80" oninput="updateVal('val-luck', this.value)">
+                        <span id="val-luck" class="range-value">80%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">📉 Grades / Work</div>
+                        <label style="color: var(--text-muted);">Actual Effort</label>
+                        <input type="range" id="goal-grades" min="0" max="100" value="20" oninput="updateVal('val-grades', this.value)">
+                        <span id="val-grades" class="range-value">20%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">🎉 Social Life</div>
+                        <label style="color: var(--text-muted);">Parties per month</label>
+                        <input type="range" id="goal-social" min="0" max="30" value="4" oninput="updateVal('val-social', this.value)">
+                        <span id="val-social" class="range-value">4</span>
+                    </div>
+
+                     <div class="goal-card">
+                        <div class="goal-header">😴 Sleep</div>
+                        <label style="color: var(--text-muted);">Hours per night</label>
+                        <input type="range" id="goal-sleep" min="0" max="14" value="6" oninput="updateVal('val-sleep', this.value)">
+                        <span id="val-sleep" class="range-value">6 hrs</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">🎭 Drama</div>
+                        <label style="color: var(--text-muted);">Chaos Level</label>
+                        <input type="range" id="goal-drama" min="0" max="100" value="10" oninput="updateVal('val-drama', this.value)">
+                        <span id="val-drama" class="range-value">10%</span>
+                    </div>
+
+                    <div class="goal-card">
+                        <div class="goal-header">🤡 Delusion</div>
+                        <label style="color: var(--text-muted);">Self-Awareness</label>
+                        <input type="range" id="goal-delusion" min="0" max="100" value="99" oninput="updateVal('val-delusion', this.value)">
+                        <span id="val-delusion" class="range-value">99%</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button onclick="generatePlan()" style="font-size: 1.2rem; padding: 15px 40px;">Calculate My Fate 🎲</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-result" class="hidden">
+            <div class="result-container glass-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--card-border); padding-bottom: 15px; margin-bottom: 20px;">
+                    <h2 style="color: var(--primary);">🔮 2026 Reality Check</h2>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;" id="print-date"></span>
+                </div>
+
+                <h3 id="result-name" style="color: var(--text-main);">Subject: User</h3>
+                
+                <canvas id="progressChart" width="700" height="400"></canvas>
+
+                <div id="dynamic-message" class="personal-message"></div>
+
+                <div class="no-print" style="text-align: center; margin-top: 30px;">
+                    <button onclick="window.print()">🖨️ Print as Evidence</button>
+                    <button onclick="location.reload()" style="background: transparent; border: 2px solid var(--text-main); color: var(--text-main); margin-left: 10px;">Retry Life</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const DEV_MODE = true;
+        const targetDate = new Date(`January 1, 2026 00:00:00`).getTime();
+
+        let userData = {
+            name: "",
+            goals: { 
+                money: 50, happy: 50, love: 50, luck: 80,
+                grades: 20, social: 4, sleep: 6, drama: 10, delusion: 99
+            }
+        };
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0 || DEV_MODE) {
+                clearInterval(timerInterval);
+                document.getElementById('view-countdown').classList.add('hidden');
+                document.getElementById('view-intro').classList.remove('hidden');
+                document.getElementById('view-intro').classList.add('fade-in');
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById("timer").innerHTML = 
+                    (days > 0 ? days + "d " : "") + 
+                    hours.toString().padStart(2, '0') + ":" + 
+                    minutes.toString().padStart(2, '0') + ":" + 
+                    seconds.toString().padStart(2, '0');
+            }
+        }
+        let timerInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        function submitName() {
+            const nameInput = document.getElementById('username');
+            const name = nameInput.value.trim();
+            if(!name) {
+                nameInput.style.border = "2px solid var(--primary)";
+                return;
+            }
+            userData.name = name;
+            
+            const intro = document.getElementById('view-intro');
+            intro.style.opacity = '0';
+            
+            setTimeout(() => {
+                intro.classList.add('hidden');
+                
+                const letterView = document.getElementById('view-letter');
+                letterView.classList.remove('hidden');
+                letterView.classList.add('slide-up');
+                
+                document.getElementById('letter-header').innerText = `Oh, it's ${name}... 🔮`;
+                
+                const msg = "So, you think 2026 is going to be your year?\n\nLet's be honest. We both know you're just going to click some buttons and hope for a miracle.\n\nFine. Let's calculate your delusion levels.";
+                typeWriter(msg, 'typewriter-text', 30); 
+
+            }, 500);
+        }
+
+        function typeWriter(text, elementId, speed) {
+            let i = 0;
+            const element = document.getElementById(elementId);
+            element.innerHTML = ""; 
+            
+            function type() {
+                if (i < text.length) {
+                    const char = text.charAt(i);
+                    element.innerHTML += char; 
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('cursor');
+                    const btn = document.getElementById('btn-next-goals');
+                    btn.classList.remove('hidden');
+                    btn.classList.add('fade-in');
+                }
+            }
+            type();
+        }
+
+        function showDashboard() {
+            const letterView = document.getElementById('view-letter');
+            letterView.style.opacity = '0'; 
+            
+            setTimeout(() => {
+                letterView.classList.add('hidden');
+                const goalsView = document.getElementById('view-goals');
+                goalsView.classList.remove('hidden');
+                goalsView.classList.add('slide-up');
+                document.getElementById('greeting-header').innerHTML = `Configure Your Life, ${userData.name}`;
+            }, 500);
+        }
+
+        function updateVal(id, val) {
+            let suffix = "%";
+            if(id === 'val-sleep') suffix = " hrs";
+            if(id === 'val-social') suffix = "";
+            document.getElementById(id).innerText = val + suffix;
+        }
+
+        function generatePlan() {
+            const g = userData.goals;
+            g.money = parseInt(document.getElementById('goal-money').value);
+            g.happy = parseInt(document.getElementById('goal-happy').value);
+            g.love = parseInt(document.getElementById('goal-love').value);
+            g.luck = parseInt(document.getElementById('goal-luck').value);
+            g.grades = parseInt(document.getElementById('goal-grades').value);
+            g.social = parseInt(document.getElementById('goal-social').value);
+            g.sleep = parseInt(document.getElementById('goal-sleep').value);
+            g.drama = parseInt(document.getElementById('goal-drama').value);
+            g.delusion = parseInt(document.getElementById('goal-delusion').value);
+
+            const normalizedData = [
+                g.money, 
+                g.happy, 
+                g.love, 
+                g.luck,
+                g.grades,
+                (g.social / 30) * 100,
+                (g.sleep / 14) * 100,
+                g.drama,
+                g.delusion
+            ];
+
+            document.getElementById('view-goals').classList.add('hidden');
+            const resView = document.getElementById('view-result');
+            resView.classList.remove('hidden');
+            resView.classList.add('fade-in');
+            
+            document.getElementById('result-name').innerText = `Victim: ${userData.name.toUpperCase()}`;
+            document.getElementById('print-date').innerText = new Date().toLocaleDateString();
+
+            drawBarChart(normalizedData);
+            writeMessage();
+        }
+
+        function drawBarChart(data) {
+            const canvas = document.getElementById('progressChart');
+            const ctx = canvas.getContext('2d');
+            const labels = ["Money", "Joy", "Love", "Luck", "Work", "Party", "Sleep", "Drama", "Delulu"];
+            const colors = ["#fbbf24", "#f87171", "#e11d48", "#f59e0b", "#d97706", "#b45309", "#78350f", "#991b1b", "#ffffff"];
+            
+            const labelColor = "#e5e5e5";
+            const valueColor = "#ffffff";
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const padding = 40;
+            const chartWidth = canvas.width - (padding * 2);
+            const chartHeight = canvas.height - (padding * 2);
+            const barCount = data.length;
+            const gap = 15;
+            const barWidth = (chartWidth - (gap * (barCount - 1))) / barCount;
+            const bottomY = canvas.height - padding;
+            const startX = padding;
+
+            ctx.beginPath();
+            ctx.moveTo(startX, bottomY);
+            ctx.lineTo(startX + chartWidth, bottomY);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.stroke();
+
+            data.forEach((val, index) => {
+                const h = (val / 100) * chartHeight;
+                const x = startX + (index * (barWidth + gap));
+                const y = bottomY - h;
+
+                ctx.fillStyle = colors[index];
+                ctx.beginPath();
+                ctx.moveTo(x, bottomY);
+                ctx.lineTo(x, y + 5);
+                ctx.quadraticCurveTo(x, y, x + 5, y);
+                ctx.lineTo(x + barWidth - 5, y);
+                ctx.quadraticCurveTo(x + barWidth, y, x + barWidth, y + 5);
+                ctx.lineTo(x + barWidth, bottomY);
+                ctx.fill();
+
+                ctx.fillStyle = valueColor;
+                ctx.font = "bold 12px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(Math.round(val) + "%", x + barWidth/2, y - 8);
+
+                ctx.fillStyle = labelColor;
+                ctx.font = "12px sans-serif";
+                ctx.fillText(labels[index], x + barWidth/2, bottomY + 18);
+            });
+        }
+
+        function writeMessage() {
+            const g = userData.goals;
+            
+            const msg = `
+                <strong>Analysis Complete.</strong><br><br>
+                Listen, ${userData.name}. I've looked at your charts. You want <strong>${g.money}% Money</strong> and <strong>${g.luck}% Luck</strong> but only plan to put in <strong>${g.grades}% Work</strong>?<br>
+                And don't get me started on that <strong>${g.delusion}% Delusion</strong> score. That's honestly impressive.<br><br>
+                Here is the hard truth:<br>
+                <span style="font-size: 1.3rem; color: var(--primary); font-weight: bold; display: block; margin: 15px 0;">
+                Only the calendar changed, not your fate.
+                </span>
+                So shut up, stop playing with colorful sliders on the internet, and go actually do something useful.<br><br>
+                (Just kidding. Happy New Year! But seriously... good luck.)
+            `;
+            document.getElementById('dynamic-message').innerHTML = msg;
+        }
+
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function random(min, max) { return Math.random() * (max - min) + min; }
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; 
+                this.y = y;
+                this.angle = random(0, Math.PI * 2);
+                this.speed = random(2, 15);
+                this.friction = 0.94;
+                this.gravity = 0.4;
+                this.hue = random(0, 60); 
+                this.saturation = 100;
+                this.lightness = random(50, 80);
+                this.alpha = 1;
+                this.decay = random(0.005, 0.015);
+                this.size = random(2, 5);
+            }
+            update(index) {
+                this.speed *= this.friction;
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity;
+                this.alpha -= this.decay;
+                if (this.alpha <= 0) particles.splice(index, 1);
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(x, y) {
+            let particleCount = 100;
+            while (particleCount--) { particles.push(new Particle(x, y)); }
+        }
+
+        function loop() {
+            animationId = requestAnimationFrame(loop);
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.globalCompositeOperation = 'lighter';
+            let i = particles.length; 
+            while(i--) { 
+                particles[i].draw(); 
+                particles[i].update(i); 
+            }
+            
+            if (random(0, 1) < 0.04) {
+                createExplosion(random(50, canvas.width - 50), random(50, canvas.height - 200));
+            }
+        }
+
+        loop();
+
+    </script>
+</body>
+</html>
